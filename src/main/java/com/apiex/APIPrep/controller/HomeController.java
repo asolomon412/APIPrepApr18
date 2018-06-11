@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.apiex.APIPrep.model.Person;
 import com.apiex.APIPrep.model.Quote;
 import com.apiex.APIPrep.model.Result;
+import com.apiex.APIPrep.model.TriviaFact;
 
 @Controller
 public class HomeController {
@@ -67,4 +73,59 @@ public class HomeController {
 		return "personresults";
 	}
 
+	@RequestMapping("/trivia")
+	public ModelAndView trivia() {
+		ModelAndView mv = new ModelAndView("trivia");
+		// example adding headers and a key
+		// obtained some examples here:
+		// https://www.quora.com/How-do-I-consume-ReST-service-using-Spring-RestTemplate-How-to-pass-Java-object-in-HTTP-POST-Request-through-both-Header-parameter-and-Request-body-I-also-like-know-how-to-create-design-archtecture-for-my-Spring-ReST-client-application
+		HttpHeaders headers = new HttpHeaders();
+		// here is an example using that needs to pass a key into the API to retrieve
+		// the results
+		// must modify API key per the one assigned to you by Mashape
+		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ovp***");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		// using the HttpEntity to assign the headers to send to the API
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<TriviaFact> response = restTemplate.exchange(
+				"https://numbersapi.p.mashape.com/42/trivia?fragment=true&json=true&notfound=floor", HttpMethod.GET,
+				entity, TriviaFact.class);
+
+		// just printing the response will give you the status codes and more
+		// to access to the json data directly we need to use the getBody() method.
+		System.out.println(response);
+		System.out.println(response.getBody());
+		mv.addObject("test", response.getBody());
+		return mv;
+	}
+
+	@RequestMapping("/random")
+	public ModelAndView randomFact(@RequestParam("facttype") String type) {
+		ModelAndView mv = new ModelAndView("randomfact");
+		// example adding headers and a key
+		// obtained some examples here:
+		// https://www.quora.com/How-do-I-consume-ReST-service-using-Spring-RestTemplate-How-to-pass-Java-object-in-HTTP-POST-Request-through-both-Header-parameter-and-Request-body-I-also-like-know-how-to-create-design-archtecture-for-my-Spring-ReST-client-application
+		HttpHeaders headers = new HttpHeaders();
+		// here is an example using that needs to pass a key into the API to retrieve
+		// the results
+		// must modify API key per the one assigned to you by Mashape
+		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ov****");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<TriviaFact> response = restTemplate.exchange(
+				"https://numbersapi.p.mashape.com/random/" + type + "?fragment=true&json=true&max=20&min=10",
+				HttpMethod.GET, entity, TriviaFact.class);
+
+		// just printing the response will give you the status codes and more
+		// to access to the json data directly we need to use the getBody() method.
+		System.out.println(response);
+		System.out.println(response.getBody());
+		mv.addObject("test", response.getBody());
+		return mv;
+	}
 }
