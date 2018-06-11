@@ -12,5 +12,12 @@
 <a href="/"><button>New Quote</button></a><br>
 ${test.type}<br>
 ${test.value.quote}
+
+<h1>Send me to the love matcher!</h1>
+<form action="love">
+Your name: <input type="text" name="fname">
+Lover's name: <input type="text" name="sname">
+<input type="submit" value="Sumbit">
+</form>
 </body>
 </html>
