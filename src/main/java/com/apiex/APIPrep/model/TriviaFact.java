@@ -1,12 +1,14 @@
 package com.apiex.APIPrep.model;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TriviaFact {
 	
 	private String text;
-	private int number;
+	private BigDecimal number;
 	private String found;
 	private String type;
 	
@@ -36,10 +38,10 @@ public class TriviaFact {
 	public String toString() {
 		return "TriviaFact [text=" + text + ", found=" + found + ", type=" + type + "]";
 	}
-	public int getNumber() {
+	public BigDecimal getNumber() {
 		return number;
 	}
-	public void setNumber(int number) {
+	public void setNumber(BigDecimal number) {
 		this.number = number;
 	}
 	

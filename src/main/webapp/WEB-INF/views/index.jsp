@@ -17,7 +17,7 @@ ${test.value.quote}
 <form action="love">
 Your name: <input type="text" name="fname">
 Lover's name: <input type="text" name="sname">
-<input type="submit" value="Sumbit">
+<input type="submit" value="Submit">
 </form>
 </body>
 </html>
