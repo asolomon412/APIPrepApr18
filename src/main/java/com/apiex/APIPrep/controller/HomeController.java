@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.apiex.APIPrep.model.Definition;
 import com.apiex.APIPrep.model.Etherum;
 import com.apiex.APIPrep.model.LoveMatcher;
 import com.apiex.APIPrep.model.Person;
@@ -85,7 +86,7 @@ public class HomeController {
 		HttpHeaders headers = new HttpHeaders();
 		// here is an example using that needs to pass a key into the API to retrieve
 		// the results
-		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ov");
+		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ovpjx");
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		// using the HttpEntity to assign the headers to send to the API
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
@@ -111,8 +112,8 @@ public class HomeController {
 		// https://www.quora.com/How-do-I-consume-ReST-service-using-Spring-RestTemplate-How-to-pass-Java-object-in-HTTP-POST-Request-through-both-Header-parameter-and-Request-body-I-also-like-know-how-to-create-design-archtecture-for-my-Spring-ReST-client-application
 		HttpHeaders headers = new HttpHeaders();
 		// here is an example using that needs to pass a key into the API to retrieve
-		// the results -- removed some of the key will need to update this if the project is ever cloned to test
-		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ov");
+		// the results
+		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ovpjx");
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
@@ -140,7 +141,7 @@ public class HomeController {
 		HttpHeaders headers = new HttpHeaders();
 		// here is an example using that needs to pass a key into the API to retrieve
 		// the results
-		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ov");
+		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ovpjx");
 		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); // needed this because the line below was not working...
 //		headers.setContentType(MediaType.APPLICATION_JSON);
 		
@@ -175,6 +176,30 @@ public class HomeController {
 		ResponseEntity<Etherum> response = restTemplate.exchange(
 				"https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=BTC,USD,EUR",
 				HttpMethod.GET, entity, Etherum.class);
+
+		mv.addObject("test", response.getBody());
+		return mv;
+	}
+	
+	// for Vicki
+	// example returning a JSON Array of objects
+	@RequestMapping("/def")
+	public ModelAndView definition() {
+		ModelAndView mv = new ModelAndView("defn");
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); 
+		
+		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+
+		CloseableHttpClient httpClient = HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier())
+				.build();
+		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+		requestFactory.setHttpClient(httpClient);
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		ResponseEntity<Definition[]> response = restTemplate.exchange(
+				"https://owlbot.info/api/v2/dictionary/happy?format=json",
+				HttpMethod.GET, entity, Definition[].class);
 
 		mv.addObject("test", response.getBody());
 		return mv;
