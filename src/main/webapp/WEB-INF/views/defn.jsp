@@ -14,13 +14,16 @@
 <title>For Vicki</title>
 </head>
 <body>
+<div class="container">
+<h1>${word }</h1>
+${notfound }
 <c:forEach items="${test }" var="defn">
-${defn.type } <br>
-${defn.definition }<br>
-${defn.example }<br>
+type: ${defn.type } <br>
+definition: ${defn.definition }<br>
+example: ${defn.example }<br> <br>
 </c:forEach>
 
-
+</div>
 <!-- for bootstrap -->
 <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

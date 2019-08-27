@@ -40,13 +40,13 @@ public class HomeController {
 
 	@RequestMapping("/people")
 	public String people() {
-		// these lines are needed for https
+		// these lines are needed for https ssl
 		CloseableHttpClient httpClient = HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier())
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		requestFactory.setHttpClient(httpClient);
-		
-		// need to pass in the request factory to the RestTemplate
+
+		// need to pass in the request factory to the RestTemplate //
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
 		Result result = restTemplate.getForObject("https://swapi.co/api/people/?format=json", Result.class);
 
@@ -68,7 +68,7 @@ public class HomeController {
 				.build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		requestFactory.setHttpClient(httpClient);
-		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		RestTemplate restTemplate = new RestTemplate(requestFactory); //
 		Person result = restTemplate.getForObject("https://swapi.co/api/people/" + person + "/?format=json",
 				Person.class);
 		System.out.println(result.toString());
@@ -115,7 +115,7 @@ public class HomeController {
 		// the results
 		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ovpjx");
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		
+
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 
 		RestTemplate restTemplate = new RestTemplate();
@@ -130,7 +130,7 @@ public class HomeController {
 		mv.addObject("test", response.getBody());
 		return mv;
 	}
-	
+
 	@RequestMapping("/love")
 	public ModelAndView loveCalc(@RequestParam("fname") String fname, @RequestParam("sname") String sname) {
 
@@ -142,66 +142,70 @@ public class HomeController {
 		// here is an example using that needs to pass a key into the API to retrieve
 		// the results
 		headers.add("X-Mashape-Key", "wHzB00qxiAmshjpvW6GylUHEtesMp1xT2FQjsnAHBWwC1ovpjx");
-		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); // needed this because the line below was not working...
-//		headers.setContentType(MediaType.APPLICATION_JSON);
-		
+		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); // needed this because the line below was not
+																	// working...
+		// headers.setContentType(MediaType.APPLICATION_JSON);
+
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<LoveMatcher> response = restTemplate.exchange(
-				"https://love-calculator.p.mashape.com/getPercentage?fname=" + fname + "&sname=" +sname,
+				"https://love-calculator.p.mashape.com/getPercentage?fname=" + fname + "&sname=" + sname,
 				HttpMethod.GET, entity, LoveMatcher.class);
 
 		// just printing the response will give you the status codes and more
 		// to access to the json data directly we need to use the getBody() method.
-		System.out.println("Result - status ("+ response.getStatusCode() + ") has body: " + response.hasBody());
+		System.out.println("Result - status (" + response.getStatusCode() + ") has body: " + response.hasBody());
 		// returns the body of this message
 		System.out.println(response.getBody());
 		mv.addObject("test", response.getBody());
 		return mv;
 	}
-	
-	//https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR
+
+	// https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR
 	// for Jill/John/Mike
 	@RequestMapping("/crypto")
 	public ModelAndView crypto() {
 		ModelAndView mv = new ModelAndView("crypto");
-		
+
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); 
-		
+		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Etherum> response = restTemplate.exchange(
-				"https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=BTC,USD,EUR",
-				HttpMethod.GET, entity, Etherum.class);
+				"https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=BTC,USD,EUR", HttpMethod.GET,
+				entity, Etherum.class);
 
 		mv.addObject("test", response.getBody());
 		return mv;
 	}
-	
+
 	// for Vicki
 	// example returning a JSON Array of objects
+	// https://stackoverflow.com/questions/35292854/mapping-jsonarray-in-resttemplate-spring
 	@RequestMapping("/def")
-	public ModelAndView definition() {
+	public ModelAndView definition(@RequestParam("word") String word) {
 		ModelAndView mv = new ModelAndView("defn");
-		
+
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE); 
-		
+		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.add(HttpHeaders.USER_AGENT, "Testing!");
+
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLHostnameVerifier(new NoopHostnameVerifier())
-				.build();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		requestFactory.setHttpClient(httpClient);
-		RestTemplate restTemplate = new RestTemplate(requestFactory);
+		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Definition[]> response = restTemplate.exchange(
-				"https://owlbot.info/api/v2/dictionary/happy?format=json",
-				HttpMethod.GET, entity, Definition[].class);
+				"https://owlbot.info/api/v2/dictionary/" + word + "?format=json", HttpMethod.GET, entity,
+				Definition[].class);
 
-		mv.addObject("test", response.getBody());
+		mv.addObject("word", word);
+		if (response.getBody().length == 0) {
+			mv.addObject("notfound", "your word does not exist!");
+		} else {
+			mv.addObject("test", response.getBody());
+		}
 		return mv;
 	}
 }
